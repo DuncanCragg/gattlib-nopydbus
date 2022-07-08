@@ -96,7 +96,7 @@ else()
   message("Package Gattlib for development version $ENV{CPACK_PACKAGE_VERSION}")
 endif()
 set(CPACK_PACKAGE_CONTACT "Olivier Martin <olivier@labapart.com>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Library to access GATT information from Bluetooth Low Energy (BLE) devices")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "BLE API for Linux over Bluez")
 set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${CPACK_PACKAGE_VERSION}_${CPACK_PACKAGE_ARCHITECTURE}")
 
 #
