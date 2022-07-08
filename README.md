@@ -19,7 +19,7 @@ Latest GattLib Release packages
 
 X86 [deb package here](/gattlib_0.3-dev_x86_64.deb)
 
-ARM64 deb package coming soon...
+ARM64 [deb package, untested but here](/gattlib_0.3-dev_arm64.deb)
 
 
 Build GattLib
