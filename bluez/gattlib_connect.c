@@ -36,6 +36,8 @@
 #include "hci.h"
 #include "hci_lib.h"
 
+#include "src/shared/att.h"
+
 #define CONNECTION_TIMEOUT    2
 
 struct gattlib_thread_t g_gattlib_thread = { 0 };
@@ -433,6 +435,11 @@ static gatt_connection_t *gattlib_connect_with_options(const char *src, const ch
 	}
 }
 
+void disconnect_cb(int err, void *user_data){
+  gatt_connection_t* conn = user_data;
+  gattlib_disconnection_handler_t cb = conn->disconnection.disconnection_handler;
+  if(cb) cb(0);
+}
 
 /**
  * @brief Function to connect to a BLE device
@@ -476,6 +483,12 @@ gatt_connection_t *gattlib_connect(void* adapter, const char *dst, unsigned long
 	if (options & GATTLIB_CONNECTION_OPTIONS_LEGACY_BDADDR_LE_RANDOM) {
 		conn = gattlib_connect_with_options(adapter_mac_address, dst, BDADDR_LE_RANDOM, bt_io_sec_level, psm, mtu);
 	}
+
+	gattlib_context_t* context = conn->context;
+	GAttrib*           attrib  = context->attrib;
+	struct bt_att*     att     = g_attrib_get_att(attrib);
+
+	bt_att_register_disconnect(att, disconnect_cb, conn, 0);
 
 	return conn;
 }
