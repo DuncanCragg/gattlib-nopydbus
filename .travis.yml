@@ -12,8 +12,6 @@ addons:
     - g++-aarch64-linux-gnu
     - libbluetooth-dev
     - rpm
-    - python3-pip
-    - python3-setuptools
     - doxygen
 
 install:

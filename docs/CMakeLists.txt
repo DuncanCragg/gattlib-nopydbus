@@ -42,6 +42,4 @@ if (SPHINX_EXECUTABLE)
                       DEPENDS ${DOXYGEN_INDEX_FILE}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       COMMENT "Generating documentation with Sphinx")
-else()
-    message("Install Sphinx to generate Python documentation")
 endif()

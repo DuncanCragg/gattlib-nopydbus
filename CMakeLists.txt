@@ -15,7 +15,6 @@ project(gattlib)
 option(GATTLIB_BUILD_EXAMPLES "Build GattLib examples" YES)
 option(GATTLIB_SHARED_LIB "Build GattLib as a shared library" YES)
 option(GATTLIB_BUILD_DOCS "Build GattLib docs" NO)
-option(GATTLIB_PYTHON_INTERFACE "Build GattLib Python Interface" YES)
 
 find_package(PkgConfig REQUIRED)
 find_package(Doxygen)
@@ -46,36 +45,18 @@ add_definitions(-DBLUEZ_VERSION_MAJOR=${BLUEZ_VERSION_MAJOR} -DBLUEZ_VERSION_MIN
 
 set(GATTLIB_FORCE_DBUS OFF CACHE BOOL "Build gattlib with D-Bus support on Bluez version < v5.42")
 
-if (BLUEZ_VERSION_MAJOR LESS 5)
-  set(GATTLIB_DBUS FALSE)
-elseif (BLUEZ_VERSION_MINOR LESS 42)
-  if (GATTLIB_FORCE_DBUS)
-    set(GATTLIB_DBUS TRUE)
-  else()
-    set(GATTLIB_DBUS FALSE)
-  endif()
-else()
-  set(GATTLIB_DBUS TRUE)
-endif()
+set(GATTLIB_DBUS FALSE)
 
 # With 'syslog' backend, we enable all logs (ie: up to level debug) and we leave the
 # application to set the level using 'setlogmask()'
 set(GATTLIB_LOG_LEVEL 3 CACHE STRING "Define the minimum logging level for Gattlib (0=error, 1=warning, 2=info, 3=debug)")
 set(GATTLIB_LOG_BACKEND syslog CACHE STRING "Define logging backend: syslog, printf (default: syslog)")
 
-if (GATTLIB_DBUS)
-  # Build dbus-based gattlib
-  add_subdirectory(dbus)
+# Build bluez-based gattlib
+add_subdirectory(bluez)
 
-  # Add the Gattlib build directory for the examples
-  link_directories(${PROJECT_BINARY_DIR}/dbus)
-else()
-  # Build bluez-based gattlib
-  add_subdirectory(bluez)
-
-  # Add the Gattlib build directory for the examples
-  link_directories(${PROJECT_BINARY_DIR}/bluez)
-endif()
+# Add the Gattlib build directory for the examples
+link_directories(${PROJECT_BINARY_DIR}/bluez)
 
 if(GATTLIB_BUILD_DOCS)
   if (NOT Doxygen_FOUND)
@@ -86,7 +67,7 @@ if(GATTLIB_BUILD_DOCS)
 endif()
 
 # Generate pkg-config file before building the examples
-configure_file(dbus/gattlib.pc.in ${PROJECT_BINARY_DIR}/gattlib.pc @ONLY)
+configure_file(./gattlib.pc.in ${PROJECT_BINARY_DIR}/gattlib.pc @ONLY)
 
 # Add the build directory to PKG_CONFIG_PATH
 set(ENV{PKG_CONFIG_PATH} "${PROJECT_BINARY_DIR}:$ENV{PKG_CONFIG_PATH}")
@@ -97,15 +78,8 @@ if(GATTLIB_BUILD_EXAMPLES)
   add_subdirectory(examples/ble_scan)
   add_subdirectory(examples/discover)
   add_subdirectory(examples/find_eddystone)
-  add_subdirectory(examples/read_write)
-  add_subdirectory(examples/read_write_memory)
   add_subdirectory(examples/notification)
   add_subdirectory(examples/nordic_uart)
-
-  # Some examples require Bluez code and other DBus support
-  if (NOT GATTLIB_DBUS)
-    add_subdirectory(examples/gatttool)
-  endif()
 endif()
 
 #
@@ -142,10 +116,7 @@ endif()
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libglib2.0-0")
 
-# Bluez DBus API changed from v5.40
-if (GATTLIB_DBUS AND (BLUEZ_VERSION_MAJOR EQUAL 5) AND (BLUEZ_VERSION_MINOR GREATER 39))
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, bluez (>= 5.40)")
-endif()
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, bluez (>= 5.40)")
 
 #
 # List of file to install

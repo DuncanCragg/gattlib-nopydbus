@@ -100,10 +100,10 @@ else()
 endif()
 
 # gattlib
-target_compile_definitions(gattlib PUBLIC -DGATTLIB_LOG_LEVEL=${GATTLIB_LOG_LEVEL})
-if (GATTLIB_LOG_BACKEND STREQUAL "syslog")
-	target_compile_definitions(gattlib PUBLIC -DGATTLIB_LOG_BACKEND_SYSLOG)
-endif()
+# target_compile_definitions(gattlib PUBLIC -DGATTLIB_LOG_LEVEL=${GATTLIB_LOG_LEVEL})
+#if (GATTLIB_LOG_BACKEND STREQUAL "syslog")
+#	target_compile_definitions(gattlib PUBLIC -DGATTLIB_LOG_BACKEND_SYSLOG)
+#endif()
 
 include(GNUInstallDirs)
 if(GATTLIB_SHARED_LIB)

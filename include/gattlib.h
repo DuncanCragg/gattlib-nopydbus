@@ -124,6 +124,8 @@ extern "C" {
 #define GATTLIB_INFO            2
 #define GATTLIB_DEBUG           3
 
+#define GATTLIB_LOG_LEVEL 3
+
 #define GATTLIB_LOG(level, args...) if (level <= GATTLIB_LOG_LEVEL) { gattlib_log(level, args); }
 
 typedef struct _gatt_connection_t gatt_connection_t;

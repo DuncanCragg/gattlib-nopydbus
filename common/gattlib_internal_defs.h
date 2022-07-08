@@ -11,14 +11,13 @@
 
 #include "gattlib.h"
 
-enum handler_type { UNKNOWN = 0, NATIVE_NOTIFICATION, NATIVE_DISCONNECTION, PYTHON };
+enum handler_type { UNKNOWN = 0, NATIVE_NOTIFICATION, NATIVE_DISCONNECTION };
 
 struct gattlib_handler {
 	enum handler_type type;
 	union {
 		gattlib_event_handler_t notification_handler;
 		gattlib_disconnection_handler_t disconnection_handler;
-		void* python_handler;
 	};
 	void* user_data;
 };

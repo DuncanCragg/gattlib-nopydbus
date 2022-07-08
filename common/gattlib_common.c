@@ -4,10 +4,6 @@
  * Copyright (c) 2021-2022, Olivier Martin <olivier@labapart.org>
  */
 
-#if defined(WITH_PYTHON)
-	#include <Python.h>
-#endif
-
 #include <stdio.h>
 
 #include "gattlib_internal.h"
@@ -30,26 +26,6 @@ void gattlib_register_on_disconnect(gatt_connection_t *connection, gattlib_disco
 	connection->disconnection.user_data = user_data;
 }
 
-#if defined(WITH_PYTHON)
-void gattlib_register_notification_python(gatt_connection_t* connection, PyObject *notification_handler, PyObject *user_data) {
-	connection->notification.type = PYTHON;
-	connection->notification.python_handler = notification_handler;
-	connection->notification.user_data = user_data;
-}
-
-void gattlib_register_indication_python(gatt_connection_t* connection, PyObject *indication_handler, PyObject *user_data) {
-	connection->indication.type = PYTHON;
-	connection->indication.python_handler = indication_handler;
-	connection->indication.user_data = user_data;
-}
-
-void gattlib_register_on_disconnect_python(gatt_connection_t *connection, PyObject *handler, PyObject *user_data) {
-	connection->disconnection.type = PYTHON;
-	connection->disconnection.python_handler = handler;
-	connection->disconnection.user_data = user_data;
-}
-#endif
-
 bool gattlib_has_valid_handler(struct gattlib_handler *handler) {
 	return ((handler->type != UNKNOWN) && (handler->notification_handler != NULL));
 }
@@ -58,28 +34,6 @@ void gattlib_call_notification_handler(struct gattlib_handler *handler, const uu
 	if (handler->type == NATIVE_NOTIFICATION) {
 		handler->notification_handler(uuid, data, data_length, handler->user_data);
 	}
-#if defined(WITH_PYTHON)
-	else if (handler->type == PYTHON) {
-		char uuid_str[MAX_LEN_UUID_STR + 1];
-		PyGILState_STATE d_gstate;
-
-		gattlib_uuid_to_string(uuid, uuid_str, sizeof(uuid_str));
-
-		d_gstate = PyGILState_Ensure();
-
-		const char* argument_string;
-		if (sizeof(void*) == 8) {
-			argument_string = "(sLIO)";
-		} else {
-			argument_string = "(sIIO)";
-		}
-		PyObject *arglist = Py_BuildValue(argument_string, uuid_str, data, data_length, handler->user_data);
-		PyEval_CallObject((PyObject *)handler->notification_handler, arglist);
-		Py_DECREF(arglist);
-
-		PyGILState_Release(d_gstate);
-	}
-#endif
 	else {
 		GATTLIB_LOG(GATTLIB_ERROR, "Invalid notification handler.");
 	}
@@ -89,18 +43,6 @@ void gattlib_call_disconnection_handler(struct gattlib_handler *handler) {
 	if (handler->type == NATIVE_DISCONNECTION) {
 		handler->disconnection_handler(handler->user_data);
 	}
-#if defined(WITH_PYTHON)
-	else if (handler->type == PYTHON) {
-	    PyGILState_STATE d_gstate;
-	    d_gstate = PyGILState_Ensure();
-
-	    PyObject *arglist = Py_BuildValue("(O)", handler->user_data);
-	    PyEval_CallObject((PyObject *)handler->disconnection_handler, arglist);
-	    Py_DECREF(arglist);
-
-	    PyGILState_Release(d_gstate);
-	}
-#endif
 	else {
 		GATTLIB_LOG(GATTLIB_ERROR, "Invalid disconnection handler.");
 	}

@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
 		input_ptr = input;
 		for (total_length = strlen(input) + 1; total_length > 0; total_length -= length) {
 			length = MIN(total_length, 20);
-			ret = gattlib_write_without_response_char_by_handle(m_connection, tx_handle, input_ptr, length);
+			ret = gattlib_write_char_by_handle(m_connection, tx_handle, input_ptr, length);
 			if (ret) {
 				GATTLIB_LOG(GATTLIB_ERROR, "Fail to send data to NUS TX characteristic.");
 				return 1;
