@@ -17,7 +17,9 @@ It supports Bluez v5 only.
 Latest GattLib Release packages
 ===============================
 
-X86 and ARM64 deb packages coming soon...
+X86 [deb package here](/gattlib_0.3-dev_x86_64.deb)
+
+ARM64 deb package coming soon...
 
 
 Build GattLib
