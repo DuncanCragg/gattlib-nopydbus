@@ -476,6 +476,7 @@ gatt_connection_t *gattlib_connect(void* adapter, const char *dst, unsigned long
 	if (options & GATTLIB_CONNECTION_OPTIONS_LEGACY_BDADDR_LE_PUBLIC) {
 		conn = gattlib_connect_with_options(adapter_mac_address, dst, BDADDR_LE_PUBLIC, bt_io_sec_level, psm, mtu);
 		if (conn != NULL) {
+      // TODO: set disconnect_cb here too
 			return conn;
 		}
 	}
@@ -484,6 +485,7 @@ gatt_connection_t *gattlib_connect(void* adapter, const char *dst, unsigned long
 		conn = gattlib_connect_with_options(adapter_mac_address, dst, BDADDR_LE_RANDOM, bt_io_sec_level, psm, mtu);
 	}
 
+  // TODO: check !conn here
 	gattlib_context_t* context = conn->context;
 	GAttrib*           attrib  = context->attrib;
 	struct bt_att*     att     = g_attrib_get_att(attrib);
